@@ -25,5 +25,5 @@ services:
 volumes:
   main:
     name: tensyo_web_main
-  mongo:
+  mongo_web:
     name: tensyo_web_mongo
