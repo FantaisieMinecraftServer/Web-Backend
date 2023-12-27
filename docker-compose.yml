@@ -1,0 +1,26 @@
+version: "3"
+
+services:
+  main:
+    build: ./
+    env_file:
+      - .env
+    depends_on:
+      - mongo
+  mongo:
+    image: mongo:latest
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: tensyoweb
+      MONGO_INITDB_ROOT_PASSWORD: DB_MONGO_5kRZ2jSK3E472JGjB6rbnUlsyU9ail
+    ports:
+      - 27017:27017
+    volumes:
+      - mongo:/data/db
+      - mongo:/data/configdb
+
+volumes:
+  main:
+    name: tensyo_web_main
+  mongo:
+    name: tensyo_web_mongo
