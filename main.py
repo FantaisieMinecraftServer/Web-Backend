@@ -24,7 +24,9 @@ async def get_status(session: aiohttp.ClientSession, address: str, port: str, na
     online = 0
 
     past_data = []
-    async for item in database.status.find({"name": str(name.lower())}, {"_id": False}):
+    items = [x async for x in database.status.find({"name": str(name.lower())}, {"_id": False})]
+
+    for item in list(reversed(items)):
         num += 1
 
         if num > 43:
@@ -113,7 +115,9 @@ async def startup_event():
 
     for item in result:
         await database.status.insert_one(
-            {"name": str(item.get("name")).lower(), "online": item["online"], "time": datetime.now()}
+            {
+                "name": str(item.get("name")).lower(),
+                "online": item["online"],
+                "time": datetime.now().strftime("%Y-%m-%dT%H:%M:%SZ"),
+            }
         )
-
-    await asyncio.sleep(72)
