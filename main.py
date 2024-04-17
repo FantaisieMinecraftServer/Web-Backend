@@ -71,8 +71,6 @@ async def status() -> None:
             asyncio.ensure_future(get_status(session, address, "25570", "Survival")),
             asyncio.ensure_future(get_status(session, address, "25567", "MiniGame")),
             asyncio.ensure_future(get_status(session, address, "25568", "PVE")),
-            asyncio.ensure_future(get_status(session, address, "25559", "Build")),
-            asyncio.ensure_future(get_status(session, address, "25569", "Railway")),
         ]
 
         result = await asyncio.gather(*tasks)
@@ -107,8 +105,6 @@ async def startup_event():
             asyncio.ensure_future(get_status(session, address, "25570", "Survival")),
             asyncio.ensure_future(get_status(session, address, "25567", "MiniGame")),
             asyncio.ensure_future(get_status(session, address, "25568", "PVE")),
-            asyncio.ensure_future(get_status(session, address, "25559", "Build")),
-            asyncio.ensure_future(get_status(session, address, "25569", "Railway")),
         ]
 
         result = await asyncio.gather(*tasks)
