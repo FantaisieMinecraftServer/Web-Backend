@@ -1,7 +1,7 @@
 package mcstatus
 
 import (
-	"backend/app/models"
+	"main/app/models"
 	"encoding/json"
 	"fmt"
 	"io"

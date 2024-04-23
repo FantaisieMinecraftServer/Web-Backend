@@ -3,7 +3,7 @@ FROM golang:latest
 WORKDIR /
 COPY . .
 
-RUN go mod init backend \
+RUN go mod init main \
   && go mod tidy \
   && go build
 

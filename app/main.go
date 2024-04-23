@@ -1,8 +1,8 @@
-package backend
+package main
 
 import (
-	mcstatus "backend/app/lib"
-	"backend/app/models"
+	mcstatus "main/app/lib"
+	"main/app/models"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -14,6 +14,7 @@ import (
 	"github.com/go-co-op/gocron/v2"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/joho/godotenv"
+
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
