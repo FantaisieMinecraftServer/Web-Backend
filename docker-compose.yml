@@ -4,7 +4,7 @@ services:
     container_name: backend
     build: .
     ports:
-      - "8080:8080"
+      - "6000:6000"
     working_dir: /app
     tty: true
     env_file:

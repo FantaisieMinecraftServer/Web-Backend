@@ -73,7 +73,7 @@ func main() {
 
 	// Start Server
 	fmt.Printf("job ID: %v\n", nj.ID)
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger.Fatal(e.Start(":6000"))
 }
 
 func ScheduleGetStatus() {
