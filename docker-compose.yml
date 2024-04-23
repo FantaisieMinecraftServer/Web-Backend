@@ -1,0 +1,14 @@
+version: "3"
+services:
+  backend:
+    container_name: backend
+    build:
+      context: .
+      dockerfile: ./build/Dockerfile
+    volumes:
+      - ./backend:/go/src/github.com/backend
+    tty: true
+    env_file:
+      - ./build/.go_env
+    environment:
+      - TZ=Asia/Tokyo
