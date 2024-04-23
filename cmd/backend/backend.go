@@ -13,6 +13,7 @@ import (
 
 	"github.com/go-co-op/gocron/v2"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/joho/godotenv"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
 )
@@ -20,7 +21,11 @@ import (
 const address = "play.tensyoserver.net"
 
 func getDBConnection() *sql.DB {
-	db, err := sql.Open("mysql", os.Getenv("DATABASE"))
+	if err := godotenv.Load(); err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
+	db, err := sql.Open("mysql", os.Getenv("DB_URL"))
 	if err != nil {
 		panic(err.Error())
 	}
