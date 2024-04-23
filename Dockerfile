@@ -1,6 +1,6 @@
 FROM golang:latest
 
-WORKDIR /app
+WORKDIR /
 COPY . .
 
 RUN go mod init backend \
