@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"os"
 	"time"
-	mcstatus "web-backend/cmd/backend/lib"
-	"web-backend/cmd/backend/models"
+	mcstatus "web-backend/app/lib"
+	"web-backend/app/models"
 
 	"github.com/go-co-op/gocron/v2"
 	_ "github.com/go-sql-driver/mysql"

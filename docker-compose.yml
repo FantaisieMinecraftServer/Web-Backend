@@ -4,11 +4,12 @@ services:
     container_name: backend
     build:
       context: .
-      dockerfile: ./build/Dockerfile
+    ports:
+      - "8080:8080"
     volumes:
-      - /cmd/backend
+      - /app
     tty: true
     env_file:
-      - ./build/.go_env
+      - .env
     environment:
       - TZ=Asia/Tokyo

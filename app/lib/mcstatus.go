@@ -6,7 +6,7 @@ import (
 	"io"
 	"net/http"
 	"time"
-	"web-backend/cmd/backend/models"
+	"web-backend/app/models"
 )
 
 func GetStatusData(address string, port string) (models.Status_Data, error) {
