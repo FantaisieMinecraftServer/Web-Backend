@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
 	"time"
 	mcstatus "web-backend/cmd/backend/lib"
 	"web-backend/cmd/backend/models"
@@ -19,7 +20,7 @@ import (
 const address = "play.tensyoserver.net"
 
 func getDBConnection() *sql.DB {
-	db, err := sql.Open("mysql", "minecraft:2525@tcp(192.168.3.160:3306)/Web_Backend?parseTime=true")
+	db, err := sql.Open("mysql", os.Getenv("DATABASE"))
 	if err != nil {
 		panic(err.Error())
 	}
