@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: ./build/Dockerfile
     volumes:
-      - ./backend:/go/src/github.com/backend
+      - /cmd/backend
     tty: true
     env_file:
       - ./build/.go_env

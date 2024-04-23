@@ -1,11 +1,13 @@
-FROM golang:1.19.1-alpine
+FROM golang:latest
 
-RUN apk update && apk add git
+WORKDIR /cmd/backend
+COPY ./cmd/backend /cmd/backend
 
-RUN mkdir /go/src/github.com/backend
+RUN go mod init main \
+    && go mod tidy \
+    && go build
 
-WORKDIR /go/src/github.com/backend
+EXPOSE 8080
 
-ADD . /go/src/github.com/backend
 
-RUN go get -u golang.org/x/tools/cmd/goimports
+CMD ["go", "run", "backend.go"]
