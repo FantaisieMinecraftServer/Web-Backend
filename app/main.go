@@ -1,12 +1,12 @@
 package main
 
 import (
-	mcstatus "main/app/lib"
-	"main/app/models"
 	"database/sql"
 	"encoding/json"
 	"fmt"
 	"log"
+	mcstatus "main/lib"
+	"main/models"
 	"net/http"
 	"os"
 	"time"

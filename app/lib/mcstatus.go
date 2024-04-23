@@ -1,10 +1,10 @@
 package mcstatus
 
 import (
-	"main/app/models"
 	"encoding/json"
 	"fmt"
 	"io"
+	"main/models"
 	"net/http"
 	"time"
 )

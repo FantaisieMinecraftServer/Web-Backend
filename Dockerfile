@@ -1,7 +1,7 @@
 FROM golang:latest
 
-WORKDIR /
-COPY . .
+WORKDIR /app
+COPY ./app /app
 
 RUN go mod init main \
   && go mod tidy \
@@ -14,4 +14,4 @@ ENV CGO_ENABLED=0 \
 EXPOSE 8080
 
 
-CMD ["go", "run", "main.go"]
+CMD ["go", "run", ".main.go"]
