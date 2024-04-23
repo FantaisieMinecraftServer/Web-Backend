@@ -2,12 +2,10 @@ version: "3"
 services:
   backend:
     container_name: backend
-    build:
-      context: ./app
+    build: .
     ports:
       - "8080:8080"
-    volumes:
-      - /app
+    working_dir: /app
     tty: true
     env_file:
       - ./app/.env
