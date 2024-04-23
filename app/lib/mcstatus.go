@@ -1,12 +1,12 @@
 package mcstatus
 
 import (
+	"backend/app/models"
 	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
 	"time"
-	"web-backend/app/models"
 )
 
 func GetStatusData(address string, port string) (models.Status_Data, error) {

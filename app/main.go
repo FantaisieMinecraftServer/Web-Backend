@@ -1,6 +1,8 @@
-package main
+package backend
 
 import (
+	mcstatus "backend/app/lib"
+	"backend/app/models"
 	"database/sql"
 	"encoding/json"
 	"fmt"
@@ -8,8 +10,6 @@ import (
 	"net/http"
 	"os"
 	"time"
-	mcstatus "web-backend/app/lib"
-	"web-backend/app/models"
 
 	"github.com/go-co-op/gocron/v2"
 	_ "github.com/go-sql-driver/mysql"
