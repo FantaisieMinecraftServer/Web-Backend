@@ -1,7 +1,7 @@
 FROM golang:latest
 
 WORKDIR /app
-COPY ./app /app
+COPY . .
 
 RUN go mod init backend \
   && go mod tidy \
