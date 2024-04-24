@@ -14,4 +14,4 @@ ENV CGO_ENABLED=0 \
 EXPOSE 6000
 
 
-CMD ["go", "run", ".main.go"]
+CMD ["go", "run", "app/main.go"]
