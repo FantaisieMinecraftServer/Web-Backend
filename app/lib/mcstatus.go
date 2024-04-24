@@ -1,4 +1,4 @@
-package mcstatus
+package lib
 
 import (
 	"encoding/json"
