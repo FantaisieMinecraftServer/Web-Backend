@@ -4,10 +4,10 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"main/lib"
-	mcstatus "main/lib"
-	"main/routes"
 	"time"
+
+	"main/lib"
+	"main/routes"
 
 	"github.com/go-co-op/gocron/v2"
 	_ "github.com/go-sql-driver/mysql"
@@ -55,7 +55,7 @@ func main() {
 	e.GET("/v2/status", routes.GetStatus)
 
 	// Start Server
-	fmt.Printf("job ID: %v\n", nj.ID)
+	fmt.Printf("job ID: %v\n", nj.ID())
 	e.Logger.Fatal(e.Start(":6000"))
 }
 
@@ -65,11 +65,11 @@ func ScheduleGetStatus() {
 	db := lib.GetDBConnection()
 	defer db.Close()
 
-	res_1, _ := mcstatus.GetStatusData(address, "25565")
-	res_2, _ := mcstatus.GetStatusData(address, "25566")
-	res_3, _ := mcstatus.GetStatusData(address, "25570")
-	res_4, _ := mcstatus.GetStatusData(address, "25567")
-	res_5, _ := mcstatus.GetStatusData(address, "25568")
+	res_1, _ := lib.GetStatusData(address, "25565")
+	res_2, _ := lib.GetStatusData(address, "25566")
+	res_3, _ := lib.GetStatusData(address, "25570")
+	res_4, _ := lib.GetStatusData(address, "25567")
+	res_5, _ := lib.GetStatusData(address, "25568")
 
 	ins, err := db.Prepare("INSERT INTO status(date,proxy,lobby,survival,minigame,pve) VALUES(?,?,?,?,?,?)")
 
