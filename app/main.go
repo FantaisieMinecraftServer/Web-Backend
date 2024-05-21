@@ -45,6 +45,7 @@ func main() {
 	e := echo.New()
 
 	// Settings Middleware
+	e.Use(middleware.CORS())
 	e.Use(middleware.Logger())
 	e.Use(middleware.Recover())
 
@@ -53,10 +54,12 @@ func main() {
 	e.GET("/v2/", routes.GetHelp)
 	e.GET("/v2/help", routes.GetHelp)
 	e.GET("/v2/status", routes.GetStatus)
+	e.GET("/v2/leaderboard", routes.GetLeaderBoard)
+	e.POST("/v2/contact", routes.PostContact)
 
 	// Start Server
 	fmt.Printf("job ID: %v\n", nj.ID())
-	e.Logger.Fatal(e.Start(":6000"))
+	e.Logger.Fatal(e.Start(":8080"))
 }
 
 func ScheduleGetStatus() {
@@ -83,5 +86,5 @@ func ScheduleGetStatus() {
 	data_4, _ := json.Marshal(res_4)
 	data_5, _ := json.Marshal(res_5)
 
-	ins.Exec(time.Now(), string(data_1), string(data_2), string(data_3), string(data_4), string(data_5))
+	ins.Exec(time.Now().Format("2006-01-02 15:04:05"), string(data_1), string(data_2), string(data_3), string(data_4), string(data_5))
 }
