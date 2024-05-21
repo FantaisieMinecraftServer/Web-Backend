@@ -10,6 +10,3 @@ services:
       - ./app/.env
     environment:
       - TZ=Asia/Tokyo
-    extra_hosts:
-      - host.docker.internal:host-gateway
-      - localhost:172.18.0.1
