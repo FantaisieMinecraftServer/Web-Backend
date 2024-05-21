@@ -1,4 +1,3 @@
-version: "3"
 services:
   backend:
     container_name: backend
@@ -13,3 +12,4 @@ services:
       - TZ=Asia/Tokyo
     extra_hosts:
       - host.docker.internal:host-gateway
+      - localhost:172.18.0.1
