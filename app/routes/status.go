@@ -15,7 +15,7 @@ func GetStatus(c echo.Context) error {
 
 	db := lib.GetDBConnection()
 
-	rows, err := db.Query("select * from ( select * from status order by date desc limit 50 ) as A order by date")
+	rows, err := db.Query("SELECT * FROM status ORDER BY date DESC LIMIT 50")
 
 	if err != nil {
 		log.Fatalf("failed to query: %v", err)
