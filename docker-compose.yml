@@ -1,13 +1,13 @@
 services:
-  backend:
-    container_name: backend
+  api:
+    container_name: api
     build: .
     ports:
       - "6000:8080"
     working_dir: /app
     tty: true
     env_file:
-      - ./app/.env
+      - .env
     environment:
       - TZ=Asia/Tokyo
     extra_hosts:

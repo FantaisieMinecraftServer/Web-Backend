@@ -1,7 +1,7 @@
 FROM golang:latest
 
 WORKDIR /app
-COPY ./app /app
+COPY . /app
 
 RUN go mod init main \
   && go mod tidy \
@@ -12,6 +12,5 @@ ENV CGO_ENABLED=0 \
   GOARCH=amd64
 
 EXPOSE 6000
-
 
 CMD ["go", "run", "main.go"]

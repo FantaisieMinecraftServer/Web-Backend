@@ -1,18 +1,32 @@
-# <div align="center">Tensyo Web Backend</div>
+# <div align="center">Fantaisie API</div>
 
-> [!WARNING]  
-> **Currently under development.**
+このリポジトリは、このサーバーで使用している API です。<br>
+主な機能はリーダーボード、お問い合わせ、フォーム、フォーラム、アカウントとなっています。
 
-# What is this?
+## Requirements
 
-This repository is a Backend for Tensyo Web.  
-It handles status page data and leaderboard data.
+- [go](https://go.dev/)
+- [echo](https://echo.labstack.com/)
 
-# How to use
+## Installation
 
-There's no instructions on how to use it or anything.
+```bash
+$ git clone https://github.com/FantaisieMinecraftServer/api-server
+```
 
-# What about additional features, etc.?
+2. 必要な依存関係をすべてインストール
 
-If you'd like to add a feature, I'd be happy to send you a Pull Request or something.  
-If you have any questions, just ask namakemono_san.
+```bash
+$ mod init main
+$ go mod tidy
+```
+
+3. サーバーを起動
+
+```bash
+$ go run main.go
+```
+
+## License
+
+This project is licensed under the MIT License, see the [LICENSE](LICENSE) file for details
