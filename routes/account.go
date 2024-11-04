@@ -10,15 +10,15 @@ import (
 	"gorm.io/gorm"
 )
 
-type Handler struct {
+type AccountHandler struct {
 	DB *gorm.DB
 }
 
-func NewAccountHandler(db *gorm.DB) *Handler {
-	return &Handler{DB: db}
+func NewAccountHandler(db *gorm.DB) *AccountHandler {
+	return &AccountHandler{DB: db}
 }
 
-func (h *Handler) GetAccounts(c echo.Context) error {
+func (h *AccountHandler) GetAccounts(c echo.Context) error {
 	var accounts []models.Account
 
 	if err := h.DB.Preload("Player").Preload("Economy").Preload("Setting").Find(&accounts).Error; err != nil {
@@ -38,7 +38,7 @@ func (h *Handler) GetAccounts(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) GetAccount(c echo.Context) error {
+func (h *AccountHandler) GetAccount(c echo.Context) error {
 	uuid := c.Param("accountId")
 
 	var account models.Account
@@ -58,7 +58,7 @@ func (h *Handler) GetAccount(c echo.Context) error {
 	return c.JSON(http.StatusOK, response)
 }
 
-func (h *Handler) CreateAccount(c echo.Context) error {
+func (h *AccountHandler) CreateAccount(c echo.Context) error {
 	uuid := c.Param("accountId")
 	req := new(models.AccountResponse)
 	if err := c.Bind(req); err != nil {
@@ -110,7 +110,7 @@ func (h *Handler) CreateAccount(c echo.Context) error {
 	return c.JSON(http.StatusCreated, map[string]string{"message": "Account created successfully"})
 }
 
-func (h *Handler) UpdateAccount(c echo.Context) error {
+func (h *AccountHandler) UpdateAccount(c echo.Context) error {
 	uuid := c.Param("accountId")
 	req := new(models.AccountResponse)
 
@@ -146,7 +146,7 @@ func (h *Handler) UpdateAccount(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "Account updated successfully"})
 }
 
-func (h *Handler) GetHistory(c echo.Context) error {
+func (h *AccountHandler) GetHistory(c echo.Context) error {
 	return c.JSON(http.StatusOK, &models.APIHelp{
 		Version:    "v2.0.0",
 		WhatIsThis: "API for this server, don't ask me how to use it... :(",
@@ -155,7 +155,7 @@ func (h *Handler) GetHistory(c echo.Context) error {
 	})
 }
 
-func (h *Handler) CreateHistory(c echo.Context) error {
+func (h *AccountHandler) CreateHistory(c echo.Context) error {
 	return c.JSON(http.StatusOK, &models.APIHelp{
 		Version:    "v2.0.0",
 		WhatIsThis: "API for this server, don't ask me how to use it... :(",
@@ -164,7 +164,7 @@ func (h *Handler) CreateHistory(c echo.Context) error {
 	})
 }
 
-func (h *Handler) UpdateHistory(c echo.Context) error {
+func (h *AccountHandler) UpdateHistory(c echo.Context) error {
 	return c.JSON(http.StatusOK, &models.APIHelp{
 		Version:    "v2.0.0",
 		WhatIsThis: "API for this server, don't ask me how to use it... :(",
@@ -173,7 +173,7 @@ func (h *Handler) UpdateHistory(c echo.Context) error {
 	})
 }
 
-func (h *Handler) Deposit(c echo.Context) error {
+func (h *AccountHandler) Deposit(c echo.Context) error {
 	uuid := c.Param("accountId")
 	typeParam := c.QueryParam("type")
 	amountParam := c.QueryParam("amount")
@@ -211,7 +211,7 @@ func (h *Handler) Deposit(c echo.Context) error {
 	return c.JSON(http.StatusOK, map[string]string{"message": "deposit successful"})
 }
 
-func (h *Handler) Withdraw(c echo.Context) error {
+func (h *AccountHandler) Withdraw(c echo.Context) error {
 	uuid := c.Param("accountId")
 	typeParam := c.QueryParam("type")
 	amountParam := c.QueryParam("amount")

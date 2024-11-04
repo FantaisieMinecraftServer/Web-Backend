@@ -2,8 +2,6 @@ package models
 
 import (
 	"time"
-
-	"github.com/switchupcb/dasgo/dasgo"
 )
 
 type Account struct {
@@ -43,15 +41,6 @@ type Economy struct {
 }
 
 type Setting struct {
-	ID           uint         `json:"id" gorm:"primaryKey"`
-	Language     string       `json:"language"`
-	Coordination Coordination `json:"coordination"`
-}
-
-type Coordination struct {
-	Discord   dasgo.User             `json:"discord"`
-	Microsoft Coordination_Microsoft `json:"microsoft"`
-}
-
-type Coordination_Microsoft struct {
+	ID       uint   `json:"id" gorm:"primaryKey"`
+	Language string `json:"language"`
 }
