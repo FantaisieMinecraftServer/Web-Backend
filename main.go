@@ -3,11 +3,9 @@ package main
 import (
 	"fmt"
 	"log"
-	"net/http"
 	"os"
 
 	"main/lib"
-	"main/models"
 	"main/routes"
 
 	"github.com/getsentry/sentry-go"
@@ -33,39 +31,16 @@ func main() {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
 	}
 
-	// jst, err := time.LoadLocation("Asia/Tokyo")
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
-	// ns, err := gocron.NewScheduler(gocron.WithLocation(jst))
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
-	// ns.Start()
-
-	// nj, err := ns.NewJob(
-	// 	gocron.DurationJob(1*time.Minute),
-	// 	gocron.NewTask(ScheduleGetStatus),
-	// )
-
-	// if err != nil {
-	// 	log.Fatal(err)
-	// 	return
-	// }
-
 	// Create Instance
 	e := echo.New()
 
 	// Load Database
-	db, err := lib.Setup()
+	db, mongo, err := lib.Setup()
 	if err != nil {
 		e.Logger.Fatal(err)
 	}
 
+	items_handler := routes.NewItemsHandler(mongo)
 	account_handler := routes.NewAccountHandler(db)
 
 	// Settings Middleware
@@ -99,14 +74,6 @@ func main() {
 	// Set Route
 	e.GET("/", routes.Get_help)
 
-	e.HTTPErrorHandler = func(err error, c echo.Context) {
-		if he, ok := err.(*echo.HTTPError); ok {
-			if he.Code == 404 {
-				c.JSON(http.StatusNotFound, models.Error{Reason: "access to unknown endpoint"})
-			}
-		}
-	}
-
 	v2 := e.Group("/v2")
 	v2.GET("/", routes.Get_help)
 	v2.GET("/help", routes.Get_help)
@@ -123,7 +90,8 @@ func main() {
 			return decryptedAuth == fmt.Sprintf("%s:%s:%s", username, password, secretKey), nil
 		},
 	}))
-	accounts.POST("/", account_handler.CreateAccount)
+
+	accounts.POST("", account_handler.CreateAccount)
 	accounts.GET("/:accountId", account_handler.GetAccount)
 	accounts.PUT("/:accountId", account_handler.UpdateAccount)
 	accounts.GET("/:accountId/history", account_handler.GetHistory)
@@ -132,7 +100,15 @@ func main() {
 	accounts.POST("/:accountId/deposit", account_handler.Deposit)
 	accounts.POST("/:accountId/withdraw", account_handler.Withdraw)
 
+	// Items API
+	items := v2.Group("/items")
+
+	items.POST("", items_handler.CreateItem)
+	items.GET("", items_handler.GetItem)
+	items.GET("/:id", items_handler.GetItem)
+	items.PUT("/:id", items_handler.UpdateItem)
+	items.DELETE("/:id", items_handler.DeleteItem)
+
 	// Start Server
-	// fmt.Printf("job ID: %v\n", nj.ID())
 	e.Logger.Fatal(e.Start(":8080"))
 }
