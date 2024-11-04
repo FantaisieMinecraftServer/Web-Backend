@@ -1,6 +1,7 @@
 package lib
 
 import (
+	"context"
 	"log"
 	"main/models"
 	"os"
@@ -10,14 +11,28 @@ import (
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func Setup() (*gorm.DB, error) {
+func Setup() (*gorm.DB, *mongo.Client, error) {
 	if err := godotenv.Load(); err != nil {
 		log.Fatal("Error loading .env file")
 	}
 
-	dsn := os.Getenv("DB_URL")
+	clientOptions := options.Client().ApplyURI(os.Getenv("MONGO_URI"))
+	client, err := mongo.Connect(context.TODO(), clientOptions)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	err = client.Ping(context.TODO(), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	dsn := os.Getenv("MYSQL_URI")
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{
 		DisableForeignKeyConstraintWhenMigrating: true,
 		Logger: logger.New(
@@ -34,10 +49,15 @@ func Setup() (*gorm.DB, error) {
 	}
 
 	// Migrate
-	err = db.AutoMigrate(&models.Account{}, &models.Player{}, &models.Economy{}, &models.Setting{})
+	err = db.AutoMigrate(
+		&models.Account{},
+		&models.Player{},
+		&models.Economy{},
+		&models.Setting{},
+	)
 	if err != nil {
-		return nil, err
+		return nil, nil, err
 	}
 
-	return db, nil
+	return db, client, nil
 }
