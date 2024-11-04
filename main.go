@@ -104,7 +104,7 @@ func main() {
 	items := v2.Group("/items")
 
 	items.POST("", items_handler.CreateItem)
-	items.GET("", items_handler.GetItem)
+	items.GET("", items_handler.GetItems)
 	items.GET("/:id", items_handler.GetItem)
 	items.PUT("/:id", items_handler.UpdateItem)
 	items.DELETE("/:id", items_handler.DeleteItem)
