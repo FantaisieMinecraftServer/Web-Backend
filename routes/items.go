@@ -4,6 +4,7 @@ import (
 	"context"
 	"main/models"
 	"net/http"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
@@ -34,41 +35,16 @@ func (h *ItemsHandler) CreateItem(c echo.Context) error {
 	return c.JSON(http.StatusCreated, item)
 }
 
-func (h *ItemsHandler) GetItem(c echo.Context) error {
-	idParam := c.Param("id")
+func (h *ItemsHandler) GetItems(c echo.Context) error {
+	typesParam := c.QueryParam("types")
 
-	if idParam != "" {
-		var item models.Item
-		err := h.Collection.FindOne(context.TODO(), bson.M{"_id": idParam}).Decode(&item)
-		if err != nil {
-			if err == mongo.ErrNoDocuments {
-				return c.JSON(http.StatusNotFound, "Item not found")
-			}
-			return c.JSON(http.StatusInternalServerError, err.Error())
-		}
-
-		switch item.Type {
-		case "weapon":
-			var weaponData models.WeaponData
-			dataBytes, _ := bson.Marshal(item.Data)
-			bson.Unmarshal(dataBytes, &weaponData)
-			item.Data = weaponData
-		case "food":
-			var foodData models.FoodData
-			dataBytes, _ := bson.Marshal(item.Data)
-			bson.Unmarshal(dataBytes, &foodData)
-			item.Data = foodData
-		case "material":
-			var materialData models.MaterialData
-			dataBytes, _ := bson.Marshal(item.Data)
-			bson.Unmarshal(dataBytes, &materialData)
-			item.Data = materialData
-		}
-
-		return c.JSON(http.StatusOK, item)
+	filter := bson.M{}
+	if typesParam != "" {
+		types := strings.Split(typesParam, ",")
+		filter["type"] = bson.M{"$in": types}
 	}
 
-	cursor, err := h.Collection.Find(context.TODO(), bson.D{})
+	cursor, err := h.Collection.Find(context.TODO(), filter)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, "Failed to retrieve items")
 	}
@@ -79,27 +55,136 @@ func (h *ItemsHandler) GetItem(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Failed to parse items")
 	}
 
-	for i := range items {
-		switch items[i].Type {
-		case "weapon":
+	categoryMap := make(map[string]models.Category)
+	for _, item := range items {
+		switch item.Type {
+		case models.CategoryWeapon:
 			var weaponData models.WeaponData
-			dataBytes, _ := bson.Marshal(items[i].Data)
+			dataBytes, _ := bson.Marshal(item.Data)
 			bson.Unmarshal(dataBytes, &weaponData)
-			items[i].Data = weaponData
-		case "food":
+			item.Data = weaponData
+
+			groupID := weaponData.Group
+
+			if _, ok := categoryMap[groupID]; !ok {
+				categoryMap[groupID] = models.Category{
+					ID:   groupID,
+					Name: models.WeaponsGroup[groupID],
+					DisplayItem: models.DisplayItem{
+						ID:              "red_dye",
+						Name:            "武器",
+						CustomModelData: 1000,
+					},
+					Items: []models.Item{},
+				}
+			}
+
+			category := categoryMap[groupID]
+			category.Items = append(category.Items, item)
+			categoryMap[groupID] = category
+
+		case models.CategoryFood:
 			var foodData models.FoodData
-			dataBytes, _ := bson.Marshal(items[i].Data)
+			dataBytes, _ := bson.Marshal(item.Data)
 			bson.Unmarshal(dataBytes, &foodData)
-			items[i].Data = foodData
-		case "material":
+			item.Data = foodData
+
+			groupID := "food"
+
+			if _, ok := categoryMap[groupID]; !ok {
+				categoryMap[groupID] = models.Category{
+					ID:   groupID,
+					Name: "Food",
+					DisplayItem: models.DisplayItem{
+						ID:              "minecraft",
+						CustomModelData: 1001,
+					},
+					Items: []models.Item{},
+				}
+			}
+
+			category := categoryMap[groupID]
+			category.Items = append(category.Items, item)
+			categoryMap[groupID] = category
+
+		case models.CategoryMaterial:
 			var materialData models.MaterialData
-			dataBytes, _ := bson.Marshal(items[i].Data)
+			dataBytes, _ := bson.Marshal(item.Data)
 			bson.Unmarshal(dataBytes, &materialData)
-			items[i].Data = materialData
+			item.Data = materialData
+
+			groupID := "material"
+
+			if _, ok := categoryMap[groupID]; !ok {
+				categoryMap[groupID] = models.Category{
+					ID:   groupID,
+					Name: "Material",
+					DisplayItem: models.DisplayItem{
+						ID:              "minecraft",
+						CustomModelData: 1002,
+					},
+					Items: []models.Item{},
+				}
+			}
+
+			category := categoryMap[groupID]
+			category.Items = append(category.Items, item)
+			categoryMap[groupID] = category
 		}
 	}
 
-	return c.JSON(http.StatusOK, items)
+	orderedGroups := []string{
+		models.Dagger,
+		models.Sword,
+		models.Spear,
+		models.Hammer,
+		models.Wand,
+		models.Bow,
+	}
+
+	var data []models.Category
+	for _, groupID := range orderedGroups {
+		if category, ok := categoryMap[groupID]; ok {
+			data = append(data, category)
+		}
+	}
+
+	return c.JSON(http.StatusOK, map[string]interface{}{
+		"data": data,
+	})
+}
+
+func (h *ItemsHandler) GetItem(c echo.Context) error {
+	idParam := c.Param("id")
+
+	var item models.Item
+	err := h.Collection.FindOne(context.TODO(), bson.M{"_id": idParam}).Decode(&item)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			return c.JSON(http.StatusNotFound, "Item not found")
+		}
+		return c.JSON(http.StatusInternalServerError, err.Error())
+	}
+
+	switch item.Type {
+	case "weapon":
+		var weaponData models.WeaponData
+		dataBytes, _ := bson.Marshal(item.Data)
+		bson.Unmarshal(dataBytes, &weaponData)
+		item.Data = weaponData
+	case "food":
+		var foodData models.FoodData
+		dataBytes, _ := bson.Marshal(item.Data)
+		bson.Unmarshal(dataBytes, &foodData)
+		item.Data = foodData
+	case "material":
+		var materialData models.MaterialData
+		dataBytes, _ := bson.Marshal(item.Data)
+		bson.Unmarshal(dataBytes, &materialData)
+		item.Data = materialData
+	}
+
+	return c.JSON(http.StatusOK, item)
 }
 
 func (h *ItemsHandler) UpdateItem(c echo.Context) error {
@@ -114,16 +199,36 @@ func (h *ItemsHandler) UpdateItem(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	if err := c.Bind(&item); err != nil {
+	updatedItem := new(models.Item)
+	if err := c.Bind(updatedItem); err != nil {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	_, err = h.Collection.UpdateOne(context.TODO(), bson.M{"_id": id}, map[string]interface{}{"$set": item})
+	// Ensure the correct Data type based on item.Type
+	switch item.Type {
+	case "weapon":
+		var weaponData models.WeaponData
+		dataBytes, _ := bson.Marshal(updatedItem.Data)
+		bson.Unmarshal(dataBytes, &weaponData)
+		updatedItem.Data = weaponData
+	case "food":
+		var foodData models.FoodData
+		dataBytes, _ := bson.Marshal(updatedItem.Data)
+		bson.Unmarshal(dataBytes, &foodData)
+		updatedItem.Data = foodData
+	case "material":
+		var materialData models.MaterialData
+		dataBytes, _ := bson.Marshal(updatedItem.Data)
+		bson.Unmarshal(dataBytes, &materialData)
+		updatedItem.Data = materialData
+	}
+
+	_, err = h.Collection.UpdateOne(context.TODO(), bson.M{"_id": id}, bson.M{"$set": updatedItem})
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 
-	return c.JSON(http.StatusOK, item)
+	return c.JSON(http.StatusOK, updatedItem)
 }
 
 func (h *ItemsHandler) DeleteItem(c echo.Context) error {

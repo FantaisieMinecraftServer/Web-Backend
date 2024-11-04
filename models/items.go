@@ -1,5 +1,12 @@
 package models
 
+type Category struct {
+	ID          string      `json:"id"`
+	Name        string      `json:"name"`
+	DisplayItem DisplayItem `json:"display_item"`
+	Items       []Item      `json:"items"`
+}
+
 type Item struct {
 	ID              string      `bson:"_id,omitempty" json:"id"`
 	Type            string      `bson:"type" json:"type"`
@@ -14,6 +21,12 @@ type Item struct {
 }
 
 // 個別
+
+type DisplayItem struct {
+	ID              string `json:"id"`
+	Name            string `json:"name"`
+	CustomModelData int    `json:"custom_model_data"`
+}
 
 type PriceData struct {
 	Purchase   int  `bson:"purchase" json:"purchase"`
