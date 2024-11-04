@@ -11,7 +11,6 @@ import (
 	"io"
 )
 
-// compress compresses the input string using zlib
 func Compress(data string) (string, error) {
 	var buf bytes.Buffer
 	w := zlib.NewWriter(&buf)
@@ -24,7 +23,6 @@ func Compress(data string) (string, error) {
 	return buf.String(), nil
 }
 
-// decompress decompresses the input string using zlib
 func Decompress(data string) (string, error) {
 	r, err := zlib.NewReader(bytes.NewReader([]byte(data)))
 	if err != nil {
@@ -41,7 +39,6 @@ func Decompress(data string) (string, error) {
 	return out.String(), nil
 }
 
-// encrypt encrypts the input string with the given key using AES
 func Encrypt(plaintext, key string) (string, error) {
 	block, err := aes.NewCipher([]byte(key))
 	if err != nil {
@@ -60,7 +57,6 @@ func Encrypt(plaintext, key string) (string, error) {
 	return base64.StdEncoding.EncodeToString(ciphertext), nil
 }
 
-// decrypt decrypts the base64 encoded ciphertext with the given key using AES
 func Decrypt(ciphertext, key string) (string, error) {
 	ciphertextBytes, err := base64.StdEncoding.DecodeString(ciphertext)
 	if err != nil {
@@ -84,7 +80,6 @@ func Decrypt(ciphertext, key string) (string, error) {
 	return string(ciphertextBytes), nil
 }
 
-// compressEncrypt compresses, then encrypts the input string
 func CompressEncrypt(data, key string) (string, error) {
 	compressedData, err := Compress(data)
 	if err != nil {
@@ -99,7 +94,6 @@ func CompressEncrypt(data, key string) (string, error) {
 	return encryptedData, nil
 }
 
-// decryptDecompress decrypts, then decompresses the input string
 func DecryptDecompress(data, key string) (string, error) {
 	decryptedData, err := Decrypt(data, key)
 	if err != nil {
