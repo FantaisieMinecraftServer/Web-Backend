@@ -25,7 +25,7 @@ func main() {
 
 	// To initialize Sentry's handler, you need to initialize Sentry itself beforehand
 	if err := sentry.Init(sentry.ClientOptions{
-		Dsn:              "https://102afa6541f7ad3d029d698b1ace97cc@o4507617649426432.ingest.us.sentry.io/4507617650999296",
+		Dsn:              os.Getenv("SENTRY_URL"),
 		TracesSampleRate: 1.0,
 	}); err != nil {
 		fmt.Printf("Sentry initialization failed: %v\n", err)
