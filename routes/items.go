@@ -73,7 +73,7 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 					DisplayItem: models.DisplayItem{
 						ID:              "red_dye",
 						Name:            "武器",
-						CustomModelData: 1000,
+						CustomModelData: 10000,
 					},
 					Items: []models.Item{},
 				}
@@ -96,8 +96,9 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 					ID:   groupID,
 					Name: "Food",
 					DisplayItem: models.DisplayItem{
-						ID:              "minecraft",
-						CustomModelData: 1001,
+						ID:              "red_dye",
+						Name:            "食料",
+						CustomModelData: 10001,
 					},
 					Items: []models.Item{},
 				}
@@ -120,8 +121,9 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 					ID:   groupID,
 					Name: "Material",
 					DisplayItem: models.DisplayItem{
-						ID:              "minecraft",
-						CustomModelData: 1002,
+						ID:              "red_dye",
+						Name:            "素材",
+						CustomModelData: 10002,
 					},
 					Items: []models.Item{},
 				}
