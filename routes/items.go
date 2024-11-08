@@ -4,7 +4,6 @@ import (
 	"context"
 	"main/models"
 	"net/http"
-	"strings"
 
 	"github.com/labstack/echo/v4"
 	"go.mongodb.org/mongo-driver/bson"
@@ -36,12 +35,11 @@ func (h *ItemsHandler) CreateItem(c echo.Context) error {
 }
 
 func (h *ItemsHandler) GetItems(c echo.Context) error {
-	typesParam := c.QueryParam("types")
+	typeParam := c.QueryParam("type")
 
 	filter := bson.M{}
-	if typesParam != "" {
-		types := strings.Split(typesParam, ",")
-		filter["type"] = bson.M{"$in": types}
+	if typeParam != "" {
+		filter["type"] = typeParam
 	}
 
 	cursor, err := h.Collection.Find(context.TODO(), filter)
@@ -55,7 +53,7 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, "Failed to parse items")
 	}
 
-	categoryMap := make(map[string]models.Category)
+	classMap := make(map[string]models.Class)
 	for _, item := range items {
 		switch item.Type {
 		case models.CategoryWeapon:
@@ -65,77 +63,26 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 			item.Data = weaponData
 
 			groupID := weaponData.Group
-
-			if _, ok := categoryMap[groupID]; !ok {
-				categoryMap[groupID] = models.Category{
+			class, exists := classMap[groupID]
+			if !exists {
+				class = models.Class{
 					ID:   groupID,
 					Name: models.WeaponsGroup[groupID],
 					DisplayItem: models.DisplayItem{
 						ID:              "red_dye",
-						Name:            "武器",
+						Name:            models.WeaponsGroup[groupID],
 						CustomModelData: 10000,
 					},
 					Items: []models.Item{},
 				}
 			}
 
-			category := categoryMap[groupID]
-			category.Items = append(category.Items, item)
-			categoryMap[groupID] = category
-
-		case models.CategoryFood:
-			var foodData models.FoodData
-			dataBytes, _ := bson.Marshal(item.Data)
-			bson.Unmarshal(dataBytes, &foodData)
-			item.Data = foodData
-
-			groupID := "food"
-
-			if _, ok := categoryMap[groupID]; !ok {
-				categoryMap[groupID] = models.Category{
-					ID:   groupID,
-					Name: "Food",
-					DisplayItem: models.DisplayItem{
-						ID:              "red_dye",
-						Name:            "食料",
-						CustomModelData: 10001,
-					},
-					Items: []models.Item{},
-				}
-			}
-
-			category := categoryMap[groupID]
-			category.Items = append(category.Items, item)
-			categoryMap[groupID] = category
-
-		case models.CategoryMaterial:
-			var materialData models.MaterialData
-			dataBytes, _ := bson.Marshal(item.Data)
-			bson.Unmarshal(dataBytes, &materialData)
-			item.Data = materialData
-
-			groupID := "material"
-
-			if _, ok := categoryMap[groupID]; !ok {
-				categoryMap[groupID] = models.Category{
-					ID:   groupID,
-					Name: "Material",
-					DisplayItem: models.DisplayItem{
-						ID:              "red_dye",
-						Name:            "素材",
-						CustomModelData: 10002,
-					},
-					Items: []models.Item{},
-				}
-			}
-
-			category := categoryMap[groupID]
-			category.Items = append(category.Items, item)
-			categoryMap[groupID] = category
+			class.Items = append(class.Items, item)
+			classMap[groupID] = class
 		}
 	}
 
-	orderedGroups := []string{
+	orderedWeaponClasses := []string{
 		models.Dagger,
 		models.Sword,
 		models.Spear,
@@ -144,15 +91,35 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 		models.Bow,
 	}
 
-	var data []models.Category
-	for _, groupID := range orderedGroups {
-		if category, ok := categoryMap[groupID]; ok {
-			data = append(data, category)
+	var weapons []models.Class
+	for _, groupID := range orderedWeaponClasses {
+		if category, ok := classMap[groupID]; ok {
+			weapons = append(weapons, category)
 		}
 	}
 
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"data": data,
+	if typeParam == "weapon" {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": weapons,
+		})
+	}
+
+	types := []models.Type{
+		{
+			ID:   "weapons",
+			Name: "武器",
+			DisplayItem: models.DisplayItem{
+				ID:              "red_dye",
+				Name:            "武器",
+				CustomModelData: 10000,
+			},
+			Classes: weapons,
+		},
+	}
+
+	return c.JSON(http.StatusOK, models.API{
+		Status: 200,
+		Types:  types,
 	})
 }
 

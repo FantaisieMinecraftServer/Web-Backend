@@ -1,6 +1,18 @@
 package models
 
-type Category struct {
+type API struct {
+	Status int    `json:"status"`
+	Types  []Type `json:"types"`
+}
+
+type Type struct {
+	ID          string      `json:"id"`
+	Name        string      `json:"name"`
+	DisplayItem DisplayItem `json:"display_item"`
+	Classes     []Class     `json:"classes"`
+}
+
+type Class struct {
 	ID          string      `json:"id"`
 	Name        string      `json:"name"`
 	DisplayItem DisplayItem `json:"display_item"`
