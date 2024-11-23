@@ -6,17 +6,17 @@ type API struct {
 }
 
 type Type struct {
-	ID          string      `json:"id"`
-	Name        string      `json:"name"`
-	DisplayItem DisplayItem `json:"display_item"`
-	Classes     []Class     `json:"classes"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	DisplayItem *DisplayItem `json:"display_item"`
+	Classes     []Class      `json:"classes"`
 }
 
 type Class struct {
-	ID          string      `json:"id"`
-	Name        string      `json:"name"`
-	DisplayItem DisplayItem `json:"display_item"`
-	Items       []Item      `json:"items"`
+	ID          string       `json:"id"`
+	Name        string       `json:"name"`
+	DisplayItem *DisplayItem `json:"display_item"`
+	Items       []Item       `json:"items"`
 }
 
 type Item struct {
@@ -65,9 +65,9 @@ type FoodData struct {
 // 武器
 
 type WeaponData struct {
-	Group    string         `bson:"group" json:"group"`
-	Crafting []CraftingData `bson:"crafting" json:"crafting"`
-	Upgrades []UpgradeData  `bson:"upgrades" json:"upgrades"`
+	Group    string        `bson:"group" json:"group"`
+	Crafting CraftingData  `bson:"crafting" json:"crafting"`
+	Upgrades []UpgradeData `bson:"upgrades" json:"upgrades"`
 }
 
 type CraftingData struct {

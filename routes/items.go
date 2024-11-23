@@ -54,9 +54,11 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 	}
 
 	classMap := make(map[string]models.Class)
+	var materials []models.Item
+
 	for _, item := range items {
 		switch item.Type {
-		case models.CategoryWeapon:
+		case models.TypeWeapon:
 			var weaponData models.WeaponData
 			dataBytes, _ := bson.Marshal(item.Data)
 			bson.Unmarshal(dataBytes, &weaponData)
@@ -67,11 +69,11 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 			if !exists {
 				class = models.Class{
 					ID:   groupID,
-					Name: models.WeaponsGroup[groupID],
-					DisplayItem: models.DisplayItem{
-						ID:              "red_dye",
-						Name:            models.WeaponsGroup[groupID],
-						CustomModelData: 10000,
+					Name: models.WeaponClasses[groupID],
+					DisplayItem: &models.DisplayItem{
+						ID:              "barrier",
+						Name:            models.WeaponClasses[groupID],
+						CustomModelData: models.WeaponClassesCMD[groupID],
 					},
 					Items: []models.Item{},
 				}
@@ -79,6 +81,14 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 
 			class.Items = append(class.Items, item)
 			classMap[groupID] = class
+
+		case models.TypeMaterial:
+			var materialData models.MaterialData
+			dataBytes, _ := bson.Marshal(item.Data)
+			bson.Unmarshal(dataBytes, &materialData)
+			item.Data = materialData
+
+			materials = append(materials, item)
 		}
 	}
 
@@ -98,23 +108,41 @@ func (h *ItemsHandler) GetItems(c echo.Context) error {
 		}
 	}
 
-	if typeParam == "weapon" {
-		return c.JSON(http.StatusOK, map[string]interface{}{
-			"data": weapons,
-		})
-	}
-
 	types := []models.Type{
 		{
 			ID:   "weapons",
 			Name: "武器",
-			DisplayItem: models.DisplayItem{
+			DisplayItem: &models.DisplayItem{
 				ID:              "red_dye",
 				Name:            "武器",
 				CustomModelData: 10000,
 			},
 			Classes: weapons,
 		},
+		{
+			ID:          "materials",
+			Name:        "素材",
+			DisplayItem: nil,
+			Classes: []models.Class{
+				{
+					ID:          "material",
+					Name:        "素材",
+					DisplayItem: nil,
+					Items:       materials,
+				},
+			},
+		},
+	}
+
+	if typeParam == "weapon" {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": weapons,
+		})
+	}
+	if typeParam == "material" {
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"data": materials,
+		})
 	}
 
 	return c.JSON(http.StatusOK, models.API{
@@ -173,7 +201,6 @@ func (h *ItemsHandler) UpdateItem(c echo.Context) error {
 		return c.JSON(http.StatusBadRequest, err.Error())
 	}
 
-	// Ensure the correct Data type based on item.Type
 	switch item.Type {
 	case "weapon":
 		var weaponData models.WeaponData

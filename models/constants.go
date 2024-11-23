@@ -1,9 +1,9 @@
 package models
 
 const (
-	CategoryWeapon   = "weapon"
-	CategoryFood     = "food"
-	CategoryMaterial = "material"
+	TypeWeapon   = "weapon"
+	TypeFood     = "food"
+	TypeMaterial = "material"
 
 	Dagger = "dagger"
 	Sword  = "sword"
@@ -13,17 +13,26 @@ const (
 	Bow    = "bow"
 )
 
-var CategoryNames = map[string]string{
-	CategoryWeapon:   "武器",
-	CategoryFood:     "食料",
-	CategoryMaterial: "素材",
+var TypeNames = map[string]string{
+	TypeWeapon:   "武器",
+	TypeFood:     "食料",
+	TypeMaterial: "素材",
 }
 
-var WeaponsGroup = map[string]string{
+var WeaponClasses = map[string]string{
 	Dagger: "短剣",
 	Sword:  "刀剣",
 	Spear:  "槍",
 	Hammer: "ハンマー",
 	Wand:   "杖",
 	Bow:    "弓",
+}
+
+var WeaponClassesCMD = map[string]int{
+	Dagger: 11000,
+	Sword:  11001,
+	Spear:  11002,
+	Hammer: 11003,
+	Wand:   11004,
+	Bow:    11005,
 }
